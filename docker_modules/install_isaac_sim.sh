@@ -60,6 +60,25 @@ if [ "$ISAAC_SIM_VERSION" = "4.5.0" ]; then
     # Note: Optional dependencies and the Isaac Sim ROS workspace are not installed to minimize image size
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/install_ros.html#running-native-ros
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/install_ros.html#setting-up-workspaces
+elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
+    echo "Installing Isaac Sim Compatibility Checker 5.0.0..."
+    # Ref: https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/requirements.html#isaac-sim-compatibility-checker
+    python3 -V | grep "Python 3.11" \
+        && cd /tmp \
+        && wget -q https://download.isaacsim.omniverse.nvidia.com/isaac-sim-comp-check-5.0.0-linux-x86_64.zip \
+        && unzip "isaac-sim-comp-check-5.0.0-linux-x86_64.zip" -d ~/isaac-sim-comp-check \
+        && rm "isaac-sim-comp-check-5.0.0-linux-x86_64.zip" \
+        || exit 1
+    echo "Installing Isaac Sim 5.0.0 (requires Python 3.11)..."
+    # Ref: https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/install_workstation.html
+    python3 -V | grep "Python 3.11" \
+        && cd /tmp \
+        && wget -q https://download.isaacsim.omniverse.nvidia.com/isaac-sim-standalone-5.0.0-linux-x86_64.zip \
+        && unzip "isaac-sim-standalone-5.0.0-linux-x86_64.zip" -d "$ISAACSIM_PATH" \
+        && rm "isaac-sim-standalone-5.0.0-linux-x86_64.zip" \
+        && cd "$ISAACSIM_PATH" \
+        && ./post_install.sh \
+        || exit 1
 else
     echo "Error: Unsupported Isaac Sim version: $ISAAC_SIM_VERSION"
     exit 1
@@ -70,17 +89,35 @@ pip install scipy==1.14.1 numpy==1.26.0
 
 echo "Creating Isaac Sim directories with correct ownership to avoid permission issues after volume mount..."
 sudo mkdir -p /isaac-sim && sudo chown $USERNAME:$USERNAME /isaac-sim || exit 1
-mkdir -p /isaac-sim/kit/cache \
-    && mkdir -p /home/$USERNAME/.cache/ov \
-    && mkdir -p /home/$USERNAME/.local/lib/python3.10/site-packages/omni/cache \
-    && mkdir -p /home/$USERNAME/.cache/pip \
-    && mkdir -p /home/$USERNAME/.cache/nvidia/GLCache \
-    && mkdir -p /home/$USERNAME/.nv/ComputeCache \
-    && mkdir -p /home/$USERNAME/.nvidia-omniverse/logs \
-    && mkdir -p /home/$USERNAME/.local/lib/python3.10/site-packages/omni/logs \
-    && mkdir -p /home/$USERNAME/.local/share/ov/data \
-    && mkdir -p /home/$USERNAME/.local/lib/python3.10/site-packages/omni/data \
-    && mkdir -p /home/$USERNAME/Documents \
-    || exit 1
+
+if [ "$ISAAC_SIM_VERSION" = "4.5.0" ]; then
+    echo "Creating Isaac Sim 4.5.0 specific directories with correct ownership to avoid permission issues after volume mount..."
+    mkdir -p /isaac-sim/kit/cache \
+        && mkdir -p /home/$USERNAME/.cache/ov \
+        && mkdir -p /home/$USERNAME/.local/lib/python3.10/site-packages/omni/cache \
+        && mkdir -p /home/$USERNAME/.cache/pip \
+        && mkdir -p /home/$USERNAME/.cache/nvidia/GLCache \
+        && mkdir -p /home/$USERNAME/.nv/ComputeCache \
+        && mkdir -p /home/$USERNAME/.nvidia-omniverse/logs \
+        && mkdir -p /home/$USERNAME/.local/lib/python3.10/site-packages/omni/logs \
+        && mkdir -p /home/$USERNAME/.local/share/ov/data \
+        && mkdir -p /home/$USERNAME/.local/lib/python3.10/site-packages/omni/data \
+        && mkdir -p /home/$USERNAME/Documents \
+        || exit 1
+elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
+    echo "Creating Isaac Sim 5.0.0 specific directories with correct ownership to avoid permission issues after volume mount..."
+    mkdir -p /isaac-sim/kit/cache \
+        && mkdir -p /home/$USERNAME/.cache/ov \
+        && mkdir -p /home/$USERNAME/.local/lib/python3.11/site-packages/omni/cache \
+        && mkdir -p /home/$USERNAME/.cache/pip \
+        && mkdir -p /home/$USERNAME/.cache/nvidia/GLCache \
+        && mkdir -p /home/$USERNAME/.nv/ComputeCache \
+        && mkdir -p /home/$USERNAME/.nvidia-omniverse/logs \
+        && mkdir -p /home/$USERNAME/.local/lib/python3.11/site-packages/omni/logs \
+        && mkdir -p /home/$USERNAME/.local/share/ov/data \
+        && mkdir -p /home/$USERNAME/.local/lib/python3.11/site-packages/omni/data \
+        && mkdir -p /home/$USERNAME/Documents \
+        || exit 1
+fi
 
 echo "Isaac Sim installation completed successfully!"
