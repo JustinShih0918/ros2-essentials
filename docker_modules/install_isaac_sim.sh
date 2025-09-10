@@ -79,6 +79,7 @@ elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
         && cd "$ISAACSIM_PATH" \
         && ./post_install.sh \
         || exit 1
+        # test commit
 else
     echo "Error: Unsupported Isaac Sim version: $ISAAC_SIM_VERSION"
     exit 1
