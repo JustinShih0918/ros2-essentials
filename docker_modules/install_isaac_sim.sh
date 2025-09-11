@@ -36,6 +36,10 @@ sudo apt-get update && sudo apt-get install -y \
     && sudo rm -rf /var/lib/apt/lists/* \
     || exit 1
 
+echo "Checking available disk space..."
+df -h /tmp
+df -h "$ISAACSIM_PATH" || df -h /
+
 if [ "$ISAAC_SIM_VERSION" = "4.5.0" ]; then
     echo "Installing Isaac Sim Compatibility Checker 4.5.0..."
     # Note: The Isaac Sim Compatibility Checker is installed since its usefulness outweighs the image size increase
@@ -61,14 +65,34 @@ if [ "$ISAAC_SIM_VERSION" = "4.5.0" ]; then
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/install_ros.html#running-native-ros
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/install_ros.html#setting-up-workspaces
 elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
+    echo "Check installed Python version..."
+    python3 -V
+    # Install Python 3.11
+    echo "Installing Python 3.11 for Isaac Sim 5.0.0..."
+    sudo apt-get update
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository -y ppa:deadsnakes/ppa
+    sudo apt-get update
+    sudo apt-get install -y python3.11 python3.11-dev python3.11-distutils python3.11-venv
+
+    # Update alternatives to make python3 point to python3.11
+    echo "Updating alternatives to make python3 point to python3.11..."
+    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 2
+    sudo update-alternatives --set python3 /usr/bin/python3.11
+    
+    # Verify that python3 now points to python3.11
+    echo "Verifying python3 version after update:"
+    python3 -V
+
     echo "Installing Isaac Sim Compatibility Checker 5.0.0..."
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/requirements.html#isaac-sim-compatibility-checker
-    python3 -V | grep "Python 3.11" \
-        && cd /tmp \
+    # python3 -V | grep "Python 3.11"
+    cd /tmp \
         && wget -q https://download.isaacsim.omniverse.nvidia.com/isaac-sim-comp-check-5.0.0-linux-x86_64.zip \
         && unzip "isaac-sim-comp-check-5.0.0-linux-x86_64.zip" -d ~/isaac-sim-comp-check \
         && rm "isaac-sim-comp-check-5.0.0-linux-x86_64.zip" \
-        || exit 1
+        || { echo "Error: Failed to download or extract Isaac Sim Compatibility Checker"; exit 1; }
     echo "Installing Isaac Sim 5.0.0 (requires Python 3.11)..."
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/install_workstation.html
     python3 -V | grep "Python 3.11" \
@@ -77,9 +101,20 @@ elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
         && unzip "isaac-sim-standalone-5.0.0-linux-x86_64.zip" -d "$ISAACSIM_PATH" \
         && rm "isaac-sim-standalone-5.0.0-linux-x86_64.zip" \
         && cd "$ISAACSIM_PATH" \
-        && ./post_install.sh \
-        || exit 1
-        # test commit
+        # Run post_install.sh and explicitly check its exit code
+        if [ -f "./post_install.sh" ]; then
+            chmod +x ./post_install.sh
+            ./post_install.sh
+            POST_INSTALL_EXIT_CODE=$?
+            if [ $POST_INSTALL_EXIT_CODE -ne 0 ]; then
+                echo "Error: post_install.sh failed with exit code: $POST_INSTALL_EXIT_CODE"
+                echo "Stopping installation as requested"
+                exit 1
+            fi
+        else
+            echo "Error: post_install.sh not found in $(pwd)"
+            exit 1
+        fi
 else
     echo "Error: Unsupported Isaac Sim version: $ISAAC_SIM_VERSION"
     exit 1
