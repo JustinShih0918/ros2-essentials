@@ -1,9 +1,9 @@
-name: justin-ros2-go2-ws
+name: ros2-go2-ws
 services:
   volume-instantiation:
     # Ref: https://github.com/moby/moby/issues/47842#issuecomment-2249050939
     image: ubuntu:22.04
-    container_name: justin-ros2-go2-ws-volume-instantiation
+    container_name: ros2-go2-ws-volume-instantiation
     command: bash -c "
         echo 'Creating directories and setting ownership for UID ${USER_UID:-1000}...' &&
         mkdir -p /isaac-sim/cache/{kit,ov,pip,glcache,computecache} &&
@@ -39,14 +39,14 @@ services:
         # TODO: Set Isaac Sim version or set to "" if not using Isaac Sim
         ISAAC_SIM_VERSION: "5.0.0"
         # TODO: Set Isaac Lab version or set to "" if not using Isaac Lab
-        ISAAC_LAB_VERSION: "2.2.0"
+        ISAAC_LAB_VERSION: "2.2.1"
         # TODO: Set Isaac ROS to "" if not using Isaac ROS
         # ISAAC_ROS: "YES"
       cache_from:
         - j3soon/ros2-go2-ws:buildcache-amd64
         - j3soon/ros2-go2-ws:buildcache-arm64
     image: j3soon/ros2-go2-ws
-    container_name: justin-ros2-go2-ws
+    container_name: ros2-go2-ws
     stdin_open: true
     tty: true
     # TODO: Comment the line below if the workspace don't need to communicate through `/dev/*` devices.
@@ -175,8 +175,8 @@ services:
       - ../..:/home/ros2-essentials
 volumes:
   gazebo-cache:
-    name: justin-ros2-gazebo-cache
+    name: ros2-gazebo-cache
     external: true
   isaac-sim-cache:
-    name: justin-ros2-isaac-sim-cache
+    name: ros2-isaac-sim-cache
     external: true

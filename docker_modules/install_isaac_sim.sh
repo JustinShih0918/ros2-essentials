@@ -36,10 +36,6 @@ sudo apt-get update && sudo apt-get install -y \
     && sudo rm -rf /var/lib/apt/lists/* \
     || exit 1
 
-echo "Checking available disk space..."
-df -h /tmp
-df -h "$ISAACSIM_PATH" || df -h /
-
 if [ "$ISAAC_SIM_VERSION" = "4.5.0" ]; then
     echo "Installing Isaac Sim Compatibility Checker 4.5.0..."
     # Note: The Isaac Sim Compatibility Checker is installed since its usefulness outweighs the image size increase
@@ -69,6 +65,7 @@ if [ "$ISAAC_SIM_VERSION" = "4.5.0" ]; then
     pip install scipy==1.14.1 numpy==1.26.0
 elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
     echo "Installing Isaac Sim Compatibility Checker 5.0.0..."
+    echo "the isaac sim path is $ISAACSIM_PATH"
     # Note: The Isaac Sim Compatibility Checker is installed since its usefulness outweighs the image size increase
     # Ref: https://docs.isaacsim.omniverse.nvidia.com/5.0.0/installation/requirements.html#isaac-sim-compatibility-checker
     cd /tmp \
@@ -82,6 +79,7 @@ elif [ "$ISAAC_SIM_VERSION" = "5.0.0" ]; then
         && wget -q https://download.isaacsim.omniverse.nvidia.com/isaac-sim-standalone-5.0.0-linux-x86_64.zip \
         && 7z x "isaac-sim-standalone-5.0.0-linux-x86_64.zip" -o"$ISAACSIM_PATH" \
         && rm "isaac-sim-standalone-5.0.0-linux-x86_64.zip" \
+        && echo "Extracted Isaac Sim to $ISAACSIM_PATH" \
         && cd "$ISAACSIM_PATH" \
         && ./post_install.sh \
         || exit 1
