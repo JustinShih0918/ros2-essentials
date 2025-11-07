@@ -161,6 +161,13 @@ COPY --chown=$USERNAME:$USERNAME \
 RUN --mount=type=cache,target=/var/cache/apt,sharing=private \
     /tmp/install_rtabmap.sh && rm /tmp/install_rtabmap.sh
 
+# slam_toolbox configuration
+ARG SLAM_TOOLBOX=""
+COPY --chown=$USERNAME:$USERNAME \
+     modules/install_slam_toolbox.sh /tmp/install_slam_toolbox.sh
+RUN --mount=type=cache,target=/var/cache/apt,sharing=private \
+    /tmp/install_slam_toolbox.sh && rm /tmp/install_slam_toolbox.sh
+
 # TODO: Add more commands here
 COPY --chown=$USERNAME:$USERNAME \
      .bashrc /home/$USERNAME/.bashrc
