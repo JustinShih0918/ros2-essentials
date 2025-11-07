@@ -43,6 +43,13 @@ fi
 if [ $(arch) == "x86_64" ]; then
   source /usr/share/gazebo/setup.bash
 fi
+
+# Source TurtleBot3 model environment variable if SLAM_TOOLBOX is enabled
+# Ref: https://roboticsbackend.com/ros2-nav2-generate-a-map-with-slam_toolbox/
+if [ ${SLAM_TOOLBOX} == "YES" ]; then
+    export TURTLEBOT3_MODEL=waffle
+fi
+
 # TODO: Source other workspace environments as underlay
 # Source workspace environment
 source $ROS2_WS/install/setup.bash
