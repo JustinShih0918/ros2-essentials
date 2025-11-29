@@ -1,7 +1,7 @@
 rtabmap: 
   ros__parameters: 
     frame_id: 'base_footprint'
-    use_sim_time: True
+    use_sim_time: False
     use_action_for_goal: True
     qos_image: 2
     qos_imu: 2
@@ -16,6 +16,6 @@ rtabmap:
     subscribe_rgb: True
 
     # Data synchronization
-    approx_sync: False
+    approx_sync: True
     topic_queue_size: 40
     sync_queue_size: 40
