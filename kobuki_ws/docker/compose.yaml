@@ -45,7 +45,7 @@ services:
         # TODO: Set to "YES" if using Cartographer or set to "" if not using Cartographer
         # CARTOGRAPHER: ""
         # TODO: Set to "YES" if using RTAB-Map or set to "" if not using RTAB-Map
-        # RTABMAP: ""
+        RTABMAP: "YES"
       cache_from:
         - j3soon/ros2-kobuki-ws:buildcache-amd64
         - j3soon/ros2-kobuki-ws:buildcache-arm64
