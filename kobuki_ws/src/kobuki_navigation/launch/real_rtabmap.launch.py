@@ -9,7 +9,7 @@ def generate_launch_description():
 
     # Load the rtabmap settings file
     rtabmap_settings = PathJoinSubstitution([
-        FindPackageShare("rtabmap_sim"), 
+        FindPackageShare("kobuki_navigation"), 
         "config/dual_sensor.yaml"
     ])
 
@@ -17,7 +17,7 @@ def generate_launch_description():
     remappings = [
         ('rgb/image', '/camera/color/image_raw'),
         ('rgb/camera_info', '/camera/color/camera_info'),
-        ('depth/image', '/camera/depth/image_rect_raw')
+        ('depth/image', '/camera/aligned_depth_to_color/image_raw')
     ]
     
     rtabmap_slam = Node(
