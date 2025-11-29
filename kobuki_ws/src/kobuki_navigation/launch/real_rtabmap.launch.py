@@ -25,7 +25,7 @@ def generate_launch_description():
         executable = 'rtabmap',
         parameters = [rtabmap_settings],
         remappings = remappings,
-        arguments = ['-d']
+        arguments = ['-d', '--delete_db_on_start']
     )
     
     rtabmapviz = Node(
